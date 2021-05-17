@@ -1,6 +1,9 @@
 defmodule RebornWeb.Router do
   use RebornWeb, :router
 
+  import Plug.BasicAuth
+  import Phoenix.LiveDashboard.Router
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -13,7 +16,18 @@ defmodule RebornWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", RebornWeb do
+  pipeline :admins_only do
+    plug :basic_auth,
+      username: Application.fetch_env!(:reborn, :USERNAME),
+      password: Application.fetch_env!(:reborn, :PASSWORD)
+  end
+
+  scope "/" do
+    pipe_through [:browser, :admins_only]
+    live_dashboard "/", metrics: RebornWeb.Telemetry
+  end
+
+  scope "/index", RebornWeb do
     pipe_through :browser
 
     get "/", PageController, :index
@@ -23,20 +37,4 @@ defmodule RebornWeb.Router do
   # scope "/api", RebornWeb do
   #   pipe_through :api
   # end
-
-  # Enables LiveDashboard only for development
-  #
-  # If you want to use the LiveDashboard in production, you should put
-  # it behind authentication and allow only admins to access it.
-  # If your application does not have an admins-only section yet,
-  # you can use Plug.BasicAuth to set up some basic authentication
-  # as long as you are also using SSL (which you should anyway).
-  if Mix.env() in [:dev, :test] do
-    import Phoenix.LiveDashboard.Router
-
-    scope "/" do
-      pipe_through :browser
-      live_dashboard "/dashboard", metrics: RebornWeb.Telemetry
-    end
-  end
 end

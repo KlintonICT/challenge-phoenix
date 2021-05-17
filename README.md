@@ -5,7 +5,7 @@ Reborn is a simple Phoenix web application that monitors a host system it runs o
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.setup`
+  * Create and migrate your database with `mix ecto.setup` (make sure to change username and password in `config/dev.exs` to your local postgresql)
   * Install Node.js dependencies with `npm install` inside the `assets` directory
   * Start Phoenix endpoint with `mix phx.server`
 
