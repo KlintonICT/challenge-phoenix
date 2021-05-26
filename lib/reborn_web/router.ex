@@ -22,8 +22,12 @@ defmodule RebornWeb.Router do
       password: Application.fetch_env!(:reborn, :PASSWORD)
   end
 
+  pipeline :count_live_dashboard do
+    plug RebornWeb.Plug.LiveDashboardCounter
+  end
+
   scope "/" do
-    pipe_through [:browser, :admins_only]
+    pipe_through [:browser, :admins_only, :count_live_dashboard]
     live_dashboard "/", metrics: RebornWeb.Telemetry
   end
 
