@@ -2,10 +2,10 @@ use Mix.Config
 
 # Configure your database
 config :reborn, Reborn.Repo,
-  username: "klintonchhun",
-  password: "",
+  username: "postgres",
+  password: "postgres",
   database: "reborn_dev",
-  hostname: "localhost",
+  hostname: "db",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 

@@ -1,0 +1,45 @@
+# Version of docker-compose
+version: '3.7'
+
+# Defines the containers 
+services:
+  web:
+    build:
+      context: .
+    ports:
+      - "4000:4000"
+    volumes:
+      # Files that display the changes without rebuilding the container 
+      - ./assets/css:/app/assets/css
+      - ./assets/js:/app/assets/js
+      - ./assets/static:/app/assets/static
+      - ./assets/.babelrc:/app/assets/.babelrc
+      - ./assets/package.json:/app/assets/package.json
+      - ./assets/webpack.config.js:/app/assets/webpack.config.js
+      - ./config:/app/config
+      - ./lib:/app/lib
+      - ./priv:/app/priv
+      - ./mix.exs:/app/mix.exs
+      - ./mix.lock:/app/mix.lock
+      - ./test:/app/test
+    depends_on:
+      # The `db` container needs to be started before `web` is started
+      - db
+  db:
+    # Declares which Postres image to use
+    image: postgres:13.3
+    # Declare a volume to not loose database data when stopping the container
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    # Maps port to be accessed by `web` container
+    ports: 
+      - "5432:5432"
+    environment: 
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=reborn_dev
+
+# This needs to be declared because `volumes` was uesd in the `db` container
+# Tells Docker to create a volume on the host machine to maintain data
+volumes:
+  postgres:
